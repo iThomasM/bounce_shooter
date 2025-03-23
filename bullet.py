@@ -18,6 +18,9 @@ class Bullet(Sprite):
 
         if bul_type == 2:
             self.y_dis = self.y_dis / 2
+        
+        if bul_type == 3:
+            self.y_dis = self.y_dis * 2
 
     def update(self):
         self.rect.x += self.x_dis * self.config.bullet_speed

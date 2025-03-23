@@ -27,7 +27,7 @@ class Upgrades:
         self.icon2_text = self.font.render(f"{self.config.bullet_price}$", True, (0, 0, 0))
         self.icon3_text = self.font.render(f"{self.config.speed_price}$", True, (0, 0, 0))
         self.icon4_text = self.font.render(f"{self.config.heal_price}$", True, (0, 0, 0))
-
+        
         self.rect4.center = 20, 480
         self.rect3.center = 20, 440
         self.rect2.center= 20, 400
@@ -84,7 +84,7 @@ class Upgrades:
     def bullet_upgrade(self):
         if self.config.money - self.config.bullet_price >= 0 and self.config.bullet_cooldown > 20:
             self.config.money -= self.config.bullet_price
-            self.config.bullet_cooldown -= 25
+            self.config.bullet_cooldown -= 35
             self.config.bullet_price += 3
             self.sfx.play()
         else:

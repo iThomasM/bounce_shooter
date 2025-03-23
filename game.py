@@ -15,7 +15,6 @@ class Main:
         pygame.init()
         #Music and SFX
         self.music = mixer.Sound("assets/thing.wav")
-        self.sfx = None
         self.music.set_volume(0.3)
         self.music.play()
         #Basic Setup
@@ -28,7 +27,6 @@ class Main:
         self.player = Player(self)
         self.upgrades = Upgrades(self)
         self.bullet_cooldown = self.config.bullet_cooldown
-        self.level = 1
         self.alive = True
         self.bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
@@ -127,6 +125,10 @@ class Main:
         if self._bul_cooldown():
             bullet = Bullet(self)
             bullet2 = Bullet(self, bul_type=2)
+            if self.config.bullet_cooldown <= 60:
+                bullet3 = Bullet(self, bul_type=3)
+                self.bullets.add(bullet3)
+                self.config.player_knockback_amount = 20
             self.bullets.add(bullet)
             self.bullets.add(bullet2)
             self.player.bulletx = bullet.x_dis
@@ -145,9 +147,8 @@ class Main:
         if pygame.sprite.groupcollide(self.bullets, self.enemies, True, True):
             self.config.score += 1
             self.config.money += random.randint(1, 3)
-            self.config.max_enemies += 0.25
-            if self.config.enemy_speed < 2.5:
-                self.config.enemy_speed += random.choice([0, 0, 0, 0, 0.02])
+            if self.config.max_enemies < 12:
+                self.config.max_enemies += 0.2
 
     def _enemy_fleet(self):
         enemy = Enemy(self, self.player)
