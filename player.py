@@ -7,6 +7,7 @@ class Player(Sprite):
         super().__init__()
         self.screen = game.screen
         self.config = game.config
+        self.game = game
         self.speed = self.config.player_speed
         self.knockback_int = self.config.player_knockback_duration
         self.dashing_int = self.config.player_dashing_duration
@@ -14,6 +15,8 @@ class Player(Sprite):
         screen_width, screen_height = pygame.display.get_surface().get_size()
         self.x_pos = float(screen_width // 2)  
         self.y_pos = float(screen_height // 2)
+        self.x_vel = 0
+        self.y_vel = 0
         self.moving_left = False
         self.moving_right = False
         self.moving_up = False
@@ -35,17 +38,22 @@ class Player(Sprite):
         else:
             self.speed = self.config.player_speed
         if self.moving_left and self.rect.left > 0:
-            self.x_pos -= self.speed
+            self.x_vel = -self.speed
+            self.x_pos += self.x_vel
             self.facing = -1
         if self.moving_right and self.rect.right < 500:
-            self.x_pos += self.speed
+            self.x_vel = self.speed
+            self.x_pos += self.x_vel
             self.facing = 1
         if self.moving_up and self.rect.top > 0:
-            self.y_pos -= self.speed
+            self.y_vel = -self.speed
+            self.y_pos += self.y_vel
             self.facing = -2
         if self.moving_down and self.rect.bottom < 500:
-            self.y_pos += self.speed
+            self.y_vel = self.speed
+            self.y_pos += self.y_vel
             self.facing = 2
+
         if self.shooting:
             if self.knockback_int > 0:
                 self.kickback(self.bulletx, self.bullety)
@@ -53,6 +61,7 @@ class Player(Sprite):
             else:
                 self.shooting = False
                 self.knockback_int = 5
+
         if self.dashing:
             if self.dashing_int > 0:
                 self.dash()
@@ -60,6 +69,11 @@ class Player(Sprite):
             else:
                 self.dashing = False
                 self.dashing_int = 5
+
+        if self.moving_down == False and self.moving_up == False:
+            self.y_vel = self.y_vel * 0.9
+        if self.moving_left == False and self.moving_right == False:
+            self.x_vel = self.x_vel * 0.9
 
     def dash(self):
         if self.facing == -1 and self.rect.left > 0:
@@ -73,11 +87,10 @@ class Player(Sprite):
 
     def kickback(self, x, y):
         if self.rect.left > 0 and self.rect.right < 500:
-            self.x_pos -= x * 20
+            self.x_pos -= x * self.config.player_knockback_amount
         else:
             self.x_pos += 0
         if self.rect.top > 0 and self.rect.bottom < 500:
-            self.y_pos -= y * 20
+            self.y_pos -= y * self.config.player_knockback_amount
         else:
             self.y_pos += 0
-        
