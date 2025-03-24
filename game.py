@@ -23,6 +23,8 @@ class Main:
         self.screen = pygame.display.set_mode((self.config.screen_width, self.config.screen_height))
         self.running = False
         self.menu = True
+        self.bg = pygame.image.load("assets/bg.bmp")
+        self.bg = pygame.transform.scale(self.bg, (self.config.screen_width, self.config.screen_height))
         #Everything else
         self.player = Player(self)
         self.upgrades = Upgrades(self)
@@ -70,6 +72,7 @@ class Main:
             self._screen()
             self._player_damage()
             self._bul_cooldown()
+            self._bullet_collide()
             self.enemies.update()
             self.enemies.goto = self.player
             self.bullets.update()
@@ -128,7 +131,9 @@ class Main:
             if self.config.bullet_cooldown <= 60:
                 bullet3 = Bullet(self, bul_type=3)
                 self.bullets.add(bullet3)
-                self.config.player_knockback_amount = 20
+                self.config.player_knockback_amount = 16
+                if self.config.bullet_cooldown <= 30:
+                    self.config.player_knockback_amount = 12
             self.bullets.add(bullet)
             self.bullets.add(bullet2)
             self.player.bulletx = bullet.x_dis
@@ -144,10 +149,12 @@ class Main:
                 self.bullets.remove(bullet)
             elif bullet.rect.right > 500:
                 self.bullets.remove(bullet)
+
+    def _bullet_collide(self):
         if pygame.sprite.groupcollide(self.bullets, self.enemies, True, True):
             self.config.score += 1
             self.config.money += random.randint(1, 3)
-            if self.config.max_enemies < 12:
+            if self.config.max_enemies < 10:
                 self.config.max_enemies += 0.2
 
     def _enemy_fleet(self):
@@ -155,21 +162,6 @@ class Main:
         if len(self.enemies.sprites()) < self.config.max_enemies:
             self.enemies.add(enemy)
 
-    def _screen(self):
-        self.bg = pygame.image.load("assets/bg.bmp")
-        self.bg = pygame.transform.scale(self.bg, (500, 500))
-        self.screen.blit(self.bg, (0, 0))
-        self.player.draw_player()
-        self._render_bullets()
-        self._render_enemies()
-        self._killcount()
-        self._healthbar()
-        self._moneycount()
-        self._stats()
-        self.upgrades.upgrade_menu()
-        pygame.display.flip()
-        pygame.display.update()
-    
     def _render_bullets(self):
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
@@ -219,6 +211,19 @@ class Main:
             self.bullet_cooldown -= 1
         else:
             return True
+        
+    def _screen(self):
+        self.screen.blit(self.bg, (0, 0))
+        self.player.draw_player()
+        self._render_bullets()
+        self._render_enemies()
+        self._killcount()
+        self._healthbar()
+        self._moneycount()
+        self._stats()
+        self.upgrades.upgrade_menu()
+        pygame.display.flip()
+        pygame.display.update()
         
 if __name__ == "__main__":
     game = Main()
