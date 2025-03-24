@@ -84,7 +84,7 @@ class Upgrades:
     def bullet_upgrade(self):
         if self.config.money - self.config.bullet_price >= 0 and self.config.bullet_cooldown > 20:
             if self.config.bullet_cooldown <= 70:
-                self.config.player_knockback_amount = 2
+                self.config.player_knockback_amount = 15
             self.config.money -= self.config.bullet_price
             self.config.bullet_cooldown -= 35
             self.config.bullet_price += 3
